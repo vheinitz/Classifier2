@@ -1,12 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Classifier2", "Classifier2.vcproj", "{23ED1F58-4D98-335F-A52F-74E6789770CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Classifier2", "Classifier2.vcproj", "{46A149E6-8F57-3021-A90B-29F0711EA4BB}"
 	ProjectSection(ProjectDependencies) = postProject
-		{2A06F14D-8EE2-39CB-803B-514947224B85} = {2A06F14D-8EE2-39CB-803B-514947224B85}
+		{DB47D04D-7DB2-34DA-BAD7-A5C259B400A4} = {DB47D04D-7DB2-34DA-BAD7-A5C259B400A4}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cl2", "..\..\cl2\cl2.vcproj", "{2A06F14D-8EE2-39CB-803B-514947224B85}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cl2", "..\..\cl2\cl2.vcproj", "{DB47D04D-7DB2-34DA-BAD7-A5C259B400A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,14 +14,14 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{23ED1F58-4D98-335F-A52F-74E6789770CE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{23ED1F58-4D98-335F-A52F-74E6789770CE}.Debug|Win32.Build.0 = Debug|Win32
-		{23ED1F58-4D98-335F-A52F-74E6789770CE}.Release|Win32.ActiveCfg = Release|Win32
-		{23ED1F58-4D98-335F-A52F-74E6789770CE}.Release|Win32.Build.0 = Release|Win32
-		{2A06F14D-8EE2-39CB-803B-514947224B85}.Debug|Win32.ActiveCfg = Debug|Win32
-		{2A06F14D-8EE2-39CB-803B-514947224B85}.Debug|Win32.Build.0 = Debug|Win32
-		{2A06F14D-8EE2-39CB-803B-514947224B85}.Release|Win32.ActiveCfg = Release|Win32
-		{2A06F14D-8EE2-39CB-803B-514947224B85}.Release|Win32.Build.0 = Release|Win32
+		{46A149E6-8F57-3021-A90B-29F0711EA4BB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{46A149E6-8F57-3021-A90B-29F0711EA4BB}.Debug|Win32.Build.0 = Debug|Win32
+		{46A149E6-8F57-3021-A90B-29F0711EA4BB}.Release|Win32.ActiveCfg = Release|Win32
+		{46A149E6-8F57-3021-A90B-29F0711EA4BB}.Release|Win32.Build.0 = Release|Win32
+		{DB47D04D-7DB2-34DA-BAD7-A5C259B400A4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DB47D04D-7DB2-34DA-BAD7-A5C259B400A4}.Debug|Win32.Build.0 = Debug|Win32
+		{DB47D04D-7DB2-34DA-BAD7-A5C259B400A4}.Release|Win32.ActiveCfg = Release|Win32
+		{DB47D04D-7DB2-34DA-BAD7-A5C259B400A4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
