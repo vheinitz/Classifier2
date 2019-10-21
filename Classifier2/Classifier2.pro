@@ -9,9 +9,9 @@ QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Classifier2
-DESTDIR = ../output
+DESTDIR = ../../build
 TEMPLATE = vcapp
-INCLUDEPATH += . ../Libs \
+INCLUDEPATH += . ../.. \
 
 SOURCES += main.cpp\
         gui.cpp \
@@ -30,9 +30,9 @@ FORMS    += gui.ui \
 win32 {
 	CONFIG(debug, debug|release) {
 		LIBS += \
-		../output/cl2.lib
+		$$DESTDIR/cl2.lib
 	} else {
 		LIBS += \
-		../output/cl2.lib
+		$$DESTDIR/cl2.lib
 	}
 }

@@ -12,9 +12,10 @@ class DlgAddClass : public QDialog
     Q_OBJECT
     
 public:
-    explicit DlgAddClass(QWidget *parent = 0);
+	explicit DlgAddClass(QWidget *parent = 0, QString id=QString::null, QString name=QString::null, QColor color=QColor(), int size=-1);
     ~DlgAddClass();
-	int id() const;
+	QString id() const;
+	QString objSize() const;
 	QString name() const;
 	QColor _color;
     
@@ -27,6 +28,7 @@ private slots:
 
 private:
     Ui::DlgAddClass *ui;
+	bool _editMode;
 };
 
 #endif // DLGADDCLASS_H

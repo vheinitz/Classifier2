@@ -2,7 +2,7 @@
 #define OBJECTSELECTOR_H
 
 #include <QWidget>
-#include <cl2/ui/imageview.h>
+#include <cl2/gui/imageview.h>
 #include "fsm.h"
 #include <QGraphicsScene>
 #include <QPoint>
@@ -10,7 +10,7 @@
 
 
 
-class ObjectSelector : public ObjectSelectorInterface
+class ObjectSelector : public QObject
 {
   Q_OBJECT
   QGraphicsScene * _scene;

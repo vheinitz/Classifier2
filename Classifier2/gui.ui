@@ -21,6 +21,13 @@
        <enum>QLayout::SetDefaultConstraint</enum>
       </property>
       <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Images</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QListView" name="lvFiles">
         <property name="maximumSize">
          <size>
@@ -31,7 +38,63 @@
        </widget>
       </item>
       <item>
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Artifacts</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QListView" name="lvClasses">
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Tags</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QListView" name="lvTags">
         <property name="maximumSize">
          <size>
           <width>200</width>
@@ -97,7 +160,7 @@
      <x>0</x>
      <y>0</y>
      <width>1089</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -113,6 +176,8 @@
     <property name="title">
      <string>Image</string>
     </property>
+    <addaction name="actionZoom_In"/>
+    <addaction name="actionZoom_Out"/>
     <addaction name="actionAddImage"/>
     <addaction name="actionRemoveImage"/>
    </widget>
@@ -122,6 +187,7 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionAddClass"/>
+    <addaction name="actionEditClass"/>
     <addaction name="actionRemoveClass"/>
    </widget>
    <widget class="QMenu" name="menuMode">
@@ -130,10 +196,19 @@
     </property>
     <addaction name="actionMark"/>
    </widget>
+   <widget class="QMenu" name="menuTag">
+    <property name="title">
+     <string>Tag</string>
+    </property>
+    <addaction name="actionAddTag"/>
+    <addaction name="actionEditTag"/>
+    <addaction name="actionRemoveTag"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
    <addaction name="menuClass"/>
    <addaction name="menuMode"/>
+   <addaction name="menuTag"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -194,6 +269,42 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+M</string>
+   </property>
+  </action>
+  <action name="actionZoom_In">
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt++</string>
+   </property>
+  </action>
+  <action name="actionZoom_Out">
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+-</string>
+   </property>
+  </action>
+  <action name="actionEditClass">
+   <property name="text">
+    <string>Edit</string>
+   </property>
+  </action>
+  <action name="actionAddTag">
+   <property name="text">
+    <string>Add</string>
+   </property>
+  </action>
+  <action name="actionEditTag">
+   <property name="text">
+    <string>Edit</string>
+   </property>
+  </action>
+  <action name="actionRemoveTag">
+   <property name="text">
+    <string>Remove</string>
    </property>
   </action>
  </widget>

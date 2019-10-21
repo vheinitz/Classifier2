@@ -6,21 +6,24 @@
 #include <QPolygon>
 #include <QVariant>
 #include <QColor>
+#include <QGraphicsItem>
 
 class RegionInfo
 {
 public:
 	RegionInfo(  ):_classId(-1){}
-	RegionInfo( const QPolygon & p, int c ):_polygon(p),_classId(c){}
+	RegionInfo( const QPolygon & p, QString c ):_polygon(p),_classId(c){}
 	QPolygon _polygon;
-	int _classId;
+	QString _classId;
 };
 
 class ClassInfo
 {
 public:
-	ClassInfo( int id=-1, QString name=QString::null, QColor color=QColor("blue") ):_classId(id),_name(name),_color(color){}
-	int _classId;
+	ClassInfo( QString id=QString::null, QString name=QString::null, QColor color=QColor("blue"), int s=64 ):
+	  _classId(id),_name(name),_color(color),_size(s){}
+	QString _classId;
+	int _size;
 	QString _name;
 	QColor _color;
 };
@@ -33,12 +36,14 @@ public:
     QString _name;
 	QString _root;
     QMap<QString, QList< RegionInfo > > _imageRegionClass;
-	QMap<int, ClassInfo> _classes;
+	QMap<QString, QStringList > _imageTags;
+	QMap<QString, ClassInfo> _classes;
+	QStringList _tags;
     
 signals:
     
 public slots:
-	void save( );
+	void save( QString suffix = QString::null);
 	void load( );
 	void setRoot( QString r ){_root=r;}
 	QString root() const { return _root; }

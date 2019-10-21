@@ -1,12 +1,46 @@
 #include "dlgaddclass.h"
 #include "ui_dlgaddclass.h"
 #include <QColorDialog>
+#include <QUuid>
 
-DlgAddClass::DlgAddClass(QWidget *parent) :
+DlgAddClass::DlgAddClass(QWidget *parent, QString id, QString name, QColor color, int size) :
     QDialog(parent),
+	_editMode(false),
     ui(new Ui::DlgAddClass)
 {
     ui->setupUi(this);
+	if ( color != QColor() )
+	{
+		ui->fColor->setStyleSheet( QString("background-color: %1;").arg(color.name()));
+		_color = color;
+	}
+	else
+	{
+		ui->fColor->setStyleSheet( QString("background-color: rgb(0,0,0);"));
+		_color = QColor(Qt::black);
+	}
+
+	if (size>0)
+	{
+		ui->eSize->setText( QString::number(size) );
+	}
+
+	if (!id.isEmpty())
+	{
+		ui->eClass->setText( id );
+		_editMode=true;
+		ui->bAdd->setText(tr("Save"));
+	}
+	else
+	{
+		ui->eClass->setText( QUuid::createUuid().toString() );
+	}
+
+	if (!name.isEmpty())
+	{
+		ui->eClassName->setText( name );
+	}
+	
 }
 
 DlgAddClass::~DlgAddClass()
@@ -26,14 +60,19 @@ void DlgAddClass::on_bAdd_clicked()
     close();
 }
 
-int DlgAddClass::id() const
+QString DlgAddClass::id() const
 {
-	return ui->eClass->text().toInt();
+	return ui->eClass->text();
 }
 
 QString DlgAddClass::name() const
 {
 	return ui->eClassName->text();
+}
+
+QString DlgAddClass::objSize() const
+{
+	return ui->eSize->text();
 }
 
 void DlgAddClass::on_bSelectcolor_clicked()

@@ -8,31 +8,38 @@ ProjectData::ProjectData(QObject *parent) :
 }
 
 
-void ProjectData::save( )
+void ProjectData::save( QString suffix )
 {
 	QStringList data;
 	foreach ( QString fn, _imageRegionClass.keys() )
 	{
 		foreach( RegionInfo ri, _imageRegionClass[fn] )
 		{
-			QStringList pol;
-			foreach ( QPoint p, ri._polygon.toList() )
-				pol<< QString("%1:%2").arg(p.x()).arg(p.y());
+			if ( _classes.contains( ri._classId) )
+			{
+				QStringList pol;
+				foreach ( QPoint p, ri._polygon.toList() )
+					pol<< QString("%1:%2").arg(p.x()).arg(p.y());
 
-			data << QString("%1; %2; %3").arg(fn).arg( ri._classId ).arg(pol.join(","));
+				data << QString("%1;%2;%3,").arg(fn).arg( ri._classId ).arg(pol.join(","));
+			}
 		}
 	}
 
-	FSTools::toFile( data, _root+"/regions" );
+	FSTools::toFile( data, _root+QString("/regions%1").arg(suffix) );
 
 
 	QStringList cldata;
-	foreach ( int cid, _classes.keys() )
+	foreach ( QString cid, _classes.keys() )
 	{
-		cldata << QString("%1; %2; %3").arg(cid).arg( _classes[cid]._name ).arg( _classes[cid]._color.name() );
+		cldata << QString("%1;%2;%3;%4")
+			.arg(cid)
+			.arg( _classes[cid]._name )
+			.arg( _classes[cid]._color.name() )
+			.arg( _classes[cid]._size );
 	}
 
-	FSTools::toFile( cldata, _root+"/classes" );
+	FSTools::toFile( cldata, _root+QString("/classes%1").arg(suffix) );
 }
 
 void ProjectData::load( )
@@ -44,11 +51,14 @@ void ProjectData::load( )
 		QStringList dentries = entry.split(";");
 		if (dentries.size() < 3) continue;
 		RegionInfo ri;
-		ri._classId = dentries.at(1).toInt();
+		ri._classId = dentries.at(1);
 		QVector<QPoint> vpoints;
 		foreach( QString p, dentries.at(2).split(",") )
 		{
-			vpoints << QPoint( p.section(":",0,0).toInt(), p.section(":",1,1).toInt() );			
+			if ( !p.isEmpty())
+			{
+				vpoints << QPoint( p.section(":",0,0).toInt(), p.section(":",1,1).toInt() );
+			}
 		}
 		ri._polygon = QPolygon(vpoints);
 		_imageRegionClass[dentries.at(0)].append(ri);
@@ -61,7 +71,7 @@ void ProjectData::load( )
 		QStringList dentries = entry.split(";");
 		if (dentries.size() < 3) continue;
 		ClassInfo classInfo;
-		classInfo._classId = dentries.at(0).toInt();
+		classInfo._classId = dentries.at(0);
 		//if ( QColor::isValidColor( dentries.at(2) ) )
 		{
 			bool ok=0;
@@ -72,7 +82,7 @@ void ProjectData::load( )
 			classInfo._color = QColor::fromRgb( r,g,b );
 		}
 		classInfo._name =dentries.at(1);
-		_classes[dentries.at(0).toInt()] = classInfo;
+		_classes[dentries.at(0)] = classInfo;
 	}
 
 }
