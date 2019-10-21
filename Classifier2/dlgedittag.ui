@@ -100,7 +100,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QTextEdit" name="textEdit">
+      <widget class="QTextEdit" name="tDescription">
        <property name="maximumSize">
         <size>
          <width>16777215</width>

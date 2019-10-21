@@ -81,6 +81,7 @@ private:
 	//QItemSelectionModel _imageTagsSelection;
 	QString _lastLoadImagesDir;
 	QString _currentClass;
+	QString _currentTag;
 	ObjectSelector *_objectselector;
 	bool _enableAutosave;
 };
