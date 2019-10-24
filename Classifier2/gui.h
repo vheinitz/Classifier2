@@ -12,6 +12,7 @@
 #include <QPointF>
 #include <QRect>
 #include <QList>
+#include <QLabel>
 
 
 namespace Ui {
@@ -37,6 +38,7 @@ private slots:
 	void on_actionZoom_In_triggered();
 	void on_actionZoom_Out_triggered();
 	void on_lvFiles_clicked(const QModelIndex &index);
+	void setCurrentImage(const QModelIndex &index);
     void on_lvClasses_activated(const QModelIndex &index);
 	void on_lvClasses_clicked(const QModelIndex &index);
     void on_actionAddImage_triggered();
@@ -61,6 +63,9 @@ private slots:
 	void sceneClicked( QPointF );
 	void autosave( );
 
+	void nextImage();
+	void prevImage();
+
 
 private:
 	void  openProject( QString );
@@ -74,8 +79,9 @@ private:
 	ProjectData _projectData;
 	QString _projectFile;
 	QString _currentImageId;
+	int _rowId;
 	ImageDatabase *_imgDb;
-	QStringListModel _images;
+	QStandardItemModel _images;
 	QStandardItemModel _classes;
 	QStandardItemModel _tags;
 	//QItemSelectionModel _imageTagsSelection;
@@ -83,6 +89,11 @@ private:
 	QString _currentClass;
 	ObjectSelector *_objectselector;
 	bool _enableAutosave;
+	QLabel *_status;
+	QLabel *_files;
+	QLabel *_taged;
+	QLabel *_marks;
+
 };
 
 #endif // GUI_H

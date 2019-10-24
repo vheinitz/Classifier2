@@ -6,6 +6,8 @@
 #include <DlgAddClass.h>
 #include <QDateTime>
 #include <QTimer>
+#include <QHBoxLayout>
+#include <QShortcut>
 
 #include "objectselector.h"
 
@@ -14,8 +16,26 @@ GUI::GUI(QWidget *parent) :
     QMainWindow(parent)
 		//,_imageTagsSelection(&_tags),
     ,ui(new Ui::GUI)
+	,_rowId(0)
 {
     ui->setupUi(this);
+	_status = new QLabel("Status:");
+	_files = new QLabel("Images:");
+	_taged = new QLabel("Tagged:");
+	_marks = new QLabel("Marks:");
+
+	ui->statusBar->setLayout(new QHBoxLayout);
+	ui->statusBar->layout()->addWidget(_status);
+	ui->statusBar->layout()->addItem( new QSpacerItem(20, 5, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+	ui->statusBar->layout()->addWidget(_files);
+	ui->statusBar->layout()->addItem( new QSpacerItem(20, 5, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+	ui->statusBar->layout()->addWidget(_taged);
+	ui->statusBar->layout()->addItem( new QSpacerItem(20, 5, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+	ui->statusBar->layout()->addWidget(_marks);
+	ui->statusBar->layout()->addItem( new QSpacerItem(20, 5, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+
+
+
 
 	_imgDb = new ImageDatabase();
 
@@ -24,6 +44,7 @@ GUI::GUI(QWidget *parent) :
 	//ui->lvTags->setSelectionModel(&_imageTagsSelection);
 	//_imageTags.setModel( &_tags  );
 	ui->lvFiles->setModel( &_images );
+	ui->lvFiles->setIconSize(QSize(120,80));
 
 	PERSISTENCE_INIT( "heinitz-it.de", "Classifier2" );
     PERSISTENT("_projectFile", &_projectFile, this );
@@ -42,8 +63,7 @@ GUI::GUI(QWidget *parent) :
 
 	if ( QFileInfo(_projectFile).exists() )
 	{
-		openProject( _projectFile );
-		_projectData.load( );
+		openProject( _projectFile );	
 	}
 	updateClasses();
 
@@ -52,6 +72,34 @@ GUI::GUI(QWidget *parent) :
 
 	_enableAutosave = true;
 	QTimer::singleShot(5*60*1000, this, SLOT(autosave()));
+
+	QShortcut *sk = new QShortcut(QKeySequence(Qt::Key_Right), this);
+	connect(sk, SIGNAL(activated()), this, SLOT(nextImage()));
+
+	sk = new QShortcut(QKeySequence(Qt::Key_Left), this);
+	connect(sk, SIGNAL(activated()), this, SLOT(prevImage()));
+
+}
+
+void GUI::nextImage()
+{
+	
+	if (_rowId < _images.rowCount())
+	{
+		_rowId++;
+		QModelIndex mi = _images.index(_rowId,0);
+		setCurrentImage(mi);
+	}
+}
+
+void GUI::prevImage()
+{
+	if (_rowId >= 0)
+	{
+		_rowId--;
+		QModelIndex mi = _images.index(_rowId,0);
+		setCurrentImage(mi);
+	}
 }
 
 GUI::~GUI()
@@ -93,8 +141,28 @@ void  GUI::openProject( QString prjFile )
 	_projectFile = prjFile;
 	_imgDb->setRoot( QFileInfo(_projectFile).canonicalPath() );
 	_projectData.setRoot( QFileInfo(_projectFile).canonicalPath() );
-	
-	_images.setStringList( _imgDb->images() );
+	_projectData.load( );
+	foreach (QString imgId, _imgDb->images())
+	{
+		QStandardItem  *it = new QStandardItem( );
+		it->setData(imgId);
+
+		QPixmap px = QPixmap::fromImage(_imgDb->getThumbnail(imgId) );
+		QPainter *paint = new QPainter(&px);
+		float f = 16;//_imgDb->getImage(imgId).size().width() / _imgDb->getThumbnail(imgId).size().width();
+		foreach( RegionInfo ri, _projectData._imageRegionClass[imgId] )
+		{
+			QBrush b(  _projectData._classes[ri._classId]._color, Qt::SolidPattern );
+			paint->setPen(QPen(b,4));
+			QRect r = ri._polygon.boundingRect();
+			r.setRect( r.x()/f, r.y()/f, r.width()/f, r.height()/f );
+			paint->drawRect(r);
+		}
+
+
+		it->setIcon( QIcon(px) );
+		_images.appendRow(it);
+	}
 	ui->lvFiles->setModel( &_images ) ;
 }
 
@@ -120,16 +188,19 @@ void GUI::on_actionZoom_Out_triggered()
 
 void GUI::on_lvFiles_clicked(const QModelIndex &index)
 {
-	_currentImageId = index.data().toString();
+	setCurrentImage(index);
+}
+
+void GUI::setCurrentImage(const QModelIndex &index)
+{
+	_currentImageId = index.data(Qt::UserRole+1).toString();
+	_rowId = index.row();
 	_currentImage = _imgDb->getImage( QFileInfo(_currentImageId).completeBaseName() );
 
 	_imageScene->clear();
 	_imageScene->setImage( QPixmap::fromImage( _currentImage ) );
 	_imageView->fitInView(_imageScene->sceneRect(), Qt::KeepAspectRatio);
-	//_imageTags.clear();
 	updateImage();
-
-	
 }
 
 void GUI::on_lvClasses_activated(const QModelIndex &index)
@@ -146,7 +217,6 @@ void GUI::on_lvClasses_clicked(const QModelIndex &index)
 
 void GUI::on_lvTags_clicked(const QModelIndex &index)
 {
-	//_imageTagsSelection.select(index,QItemSelectionModel::ToggleCurrent);
 	QString tag = index.data().toString();
 	if ( _projectData._imageTags[_currentImageId].contains(tag) )
 	{
@@ -160,6 +230,24 @@ void GUI::on_lvTags_clicked(const QModelIndex &index)
 	updateTags();
 }
 
+/*class ImageLoader : public QRunnable
+ {
+ public:
+	 ImageLoader(QStringList images, )
+     void run()
+     {
+		QStringList imgFiles = QFileDialog::getOpenFileNames(this, tr("Select Images"), _lastLoadImagesDir, "*.png");
+	QStringList added;
+	foreach (  QString f, imgFiles )
+	{
+		QString imgId = _imgDb->addImage( f );
+		QStandardItem  *it = new QStandardItem( );
+		it->setIcon( QIcon(QPixmap::fromImage(_imgDb->getThumbnail( imgId ))) );
+		_images.appendRow(it);
+	}    
+     }
+ }*/
+
 void GUI::on_actionAddImage_triggered()
 {
 	if ( _projectFile.isEmpty() )
@@ -169,11 +257,19 @@ void GUI::on_actionAddImage_triggered()
 
 	QStringList imgFiles = QFileDialog::getOpenFileNames(this, tr("Select Images"), _lastLoadImagesDir, "*.png");
 	QStringList added;
+	int cnt=0;
 	foreach (  QString f, imgFiles )
-	{
-		added << _imgDb->addImage( f );
+	{	cnt++;
+		QString imgId = _imgDb->addImage( f );
+		QStandardItem  *it = new QStandardItem( );
+		it->setIcon( QIcon(QPixmap::fromImage(_imgDb->getThumbnail( imgId ))) );
+		_images.appendRow(it);
+		_status->setText(QString("Loading files %1 of %2").arg(cnt).arg(imgFiles.size()));
+		_status->adjustSize();
+		QApplication::processEvents();
+
 	}
-	_images.setStringList( _images.stringList() + added );
+	
 	ui->lvFiles->setModel( &_images ) ;
 }
 
@@ -183,9 +279,9 @@ void GUI::on_actionRemoveImage_triggered()
 	_currentImage = QImage();
 	_currentImageMarks.clear();
 	_imageScene->clear();
-	QStringList tmpimages= _images.stringList();
-	tmpimages.removeAll( _currentImageId );
-	_images.setStringList( tmpimages );
+	//QStringList tmpimages= _images.stringList();
+	//tmpimages.removeAll( _currentImageId );
+	//_images.setStringList( tmpimages );
 	_imgDb->removeImage( _currentImageId );
 	_currentImageId.clear();
 
@@ -199,14 +295,13 @@ void GUI::on_actionAddClass_triggered()
 		QString id = tmp->id();
 		QString name = tmp->name();
 		_projectData._classes[id] = ClassInfo(id, name, tmp->_color, tmp->objSize().toInt() );
-		//_classes.setStringList( _projectData._classes.values() );
 		updateClasses();
 	}
 }
 
 void GUI::on_actionAddTag_triggered()
 {
-	/*DlgEditTag *tmp = new DlgEditTag(this);
+/*	DlgEditTag *tmp = new DlgEditTag(this);
 	if ( tmp->exec())
 	{
 		QString id = tmp->id();
@@ -215,12 +310,12 @@ void GUI::on_actionAddTag_triggered()
 		//_classes.setStringList( _projectData._classes.values() );
 		updateClasses();
 	}
-	*/
+*/	
 }
 
 void GUI::on_actionEditTag_triggered()
 {
-	/*if (_projectData._classes.contains(_currentClass))
+/*	if (_projectData._classes.contains(_currentClass))
 	{
 		DlgTag *tmp = new DlgTag(this,
 				_projectData._classes[_currentClass]._classId,
@@ -237,7 +332,7 @@ void GUI::on_actionEditTag_triggered()
 			updateClasses();
 		}
 	}
-	*/
+*/	
 }
 
 void GUI::on_actionEditClass_triggered()
@@ -310,7 +405,34 @@ void GUI::toggleMark(QPointF pos)
 
 	_currentImageMarks.append( QPair<QRect, QGraphicsItem*>( p.boundingRect(), tmpgi) );
 	_projectData._imageRegionClass[_currentImageId].append(RegionInfo( p, _currentClass ));
+	for (int i=0; i<_images.rowCount(); i++)
+	{
+		QModelIndex x = _images.index(i,0);
+		
+		if ( x.data(Qt::UserRole+1) == this->_currentImageId )
+		{
+			QString imgId = x.data(Qt::UserRole+1).toString();
+			QPixmap px = QPixmap::fromImage(_imgDb->getThumbnail(imgId) );
+			QPainter *paint = new QPainter(&px);
+			float f = 16;//_imgDb->getImage(imgId).size().width() / _imgDb->getThumbnail(imgId).size().width();
+			foreach( RegionInfo ri, _projectData._imageRegionClass[_currentImageId] )
+			{
+				QBrush b(  _projectData._classes[ri._classId]._color, Qt::SolidPattern );
+				paint->setPen(QPen(b,4));
+				QRect r = ri._polygon.boundingRect();
+				r.setRect( r.x()/f, r.y()/f, r.width()/f, r.height()/f );
+				paint->drawRect(r);
+			}
+			delete paint;
 
+			
+			QStandardItem  *it = new QStandardItem( );
+			it->setData(imgId);
+			it->setIcon( QIcon( px ) );
+			_images.setItem( x.row(), it );
+			break;
+		}
+	}
 }
 
 void GUI::updateClasses()
