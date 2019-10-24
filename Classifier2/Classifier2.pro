@@ -17,15 +17,18 @@ SOURCES += main.cpp\
         gui.cpp \
     projectdata.cpp \
 	objectselector.cpp \
-    dlgaddclass.cpp
+    dlgaddclass.cpp \
+    dlgedittag.cpp
 
 HEADERS  += gui.h \
     projectdata.h \
 	objectselector.h \
-    dlgaddclass.h
+    dlgaddclass.h \
+    dlgedittag.h
 
 FORMS    += gui.ui \
-    dlgaddclass.ui
+    dlgaddclass.ui \
+    dlgedittag.ui
 
 win32 {
 	CONFIG(debug, debug|release) {

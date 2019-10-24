@@ -28,6 +28,16 @@ public:
 	QColor _color;
 };
 
+class TagInfo
+{
+public:
+	TagInfo( QString id=QString::null, QString name=QString::null, QString description=QString::null ):
+	  _tagId(id), _name(name),_description(description){}
+	QString _tagId;
+	QString _name;
+	QString _description;
+};
+
 class ProjectData : public QObject
 {
     Q_OBJECT
@@ -38,7 +48,7 @@ public:
     QMap<QString, QList< RegionInfo > > _imageRegionClass;
 	QMap<QString, QStringList > _imageTags;
 	QMap<QString, ClassInfo> _classes;
-	QStringList _tags;
+	QMap<QString, TagInfo> _tags;
     
 signals:
     

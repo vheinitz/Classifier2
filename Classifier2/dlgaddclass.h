@@ -28,7 +28,6 @@ private slots:
 
 private:
     Ui::DlgAddClass *ui;
-	bool _editMode;
 };
 
 #endif // DLGADDCLASS_H

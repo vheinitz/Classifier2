@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <cl2/os/persistence.h>
 #include <DlgAddClass.h>
+#include <dlgedittag.h>
 #include <QDateTime>
 #include <QTimer>
 #include <QHBoxLayout>
@@ -67,7 +68,7 @@ GUI::GUI(QWidget *parent) :
 	}
 	updateClasses();
 
-	_projectData._tags <<"Pos"<<"Neg";
+	//_projectData._tags <<"Pos"<<"Neg";
 	updateTags();
 
 	_enableAutosave = true;
@@ -217,14 +218,23 @@ void GUI::on_lvClasses_clicked(const QModelIndex &index)
 
 void GUI::on_lvTags_clicked(const QModelIndex &index)
 {
-	QString tag = index.data().toString();
-	if ( _projectData._imageTags[_currentImageId].contains(tag) )
+//<<<<<<< HEAD
+//	QString tag = index.data().toString();
+//	if ( _projectData._imageTags[_currentImageId].contains(tag) )
+//=======
+	if (_currentImageId.isEmpty())
+		return;
+	_currentTag = index.data().toString();
+	//_imageTagsSelection.select(index,QItemSelectionModel::ToggleCurrent);
+	QString tagId = index.data(Qt::UserRole+1).toString();
+	if ( _projectData._imageTags[_currentImageId].contains(tagId) )
+//>>>>>>> e54f3fddb73f8c57796d7f09bf6583547afa4f2c
 	{
-		_projectData._imageTags[_currentImageId].removeAll(tag);
+		_projectData._imageTags[_currentImageId].removeAll(tagId);
 	}
 	else
 	{
-		_projectData._imageTags[_currentImageId].append(tag);
+		_projectData._imageTags[_currentImageId].append(tagId);
 	}
 	
 	updateTags();
@@ -301,38 +311,40 @@ void GUI::on_actionAddClass_triggered()
 
 void GUI::on_actionAddTag_triggered()
 {
-/*	DlgEditTag *tmp = new DlgEditTag(this);
+/*
+	DlgEditTag *tmp = new DlgEditTag(this);
+
 	if ( tmp->exec())
 	{
 		QString id = tmp->id();
 		QString name = tmp->name();
-		_projectData._classes[id] = ClassInfo(id, name, tmp->_color, tmp->objSize().toInt() );
-		//_classes.setStringList( _projectData._classes.values() );
-		updateClasses();
+		_projectData._tags[id] = TagInfo( id, name, tmp->description() );
+		updateTags();
 	}
-*/	
+*/
 }
 
 void GUI::on_actionEditTag_triggered()
 {
-/*	if (_projectData._classes.contains(_currentClass))
+/*
+	if (_projectData._tags.contains(_currentTag))
 	{
-		DlgTag *tmp = new DlgTag(this,
-				_projectData._classes[_currentClass]._classId,
-				_projectData._classes[_currentClass]._name,
-				_projectData._classes[_currentClass]._color,
-				_projectData._classes[_currentClass]._size
+		DlgEditTag *tmp = new DlgEditTag(this,
+			_projectData._tags[_currentTag]._tagId,
+			_projectData._tags[_currentTag]._name,
+			_projectData._tags[_currentTag]._description
 			);
 
 		if ( tmp->exec())
 		{
 			QString id = tmp->id();
 			QString name = tmp->name();
-			_projectData._classes[id] = ClassInfo(id, name, tmp->_color, tmp->objSize().toInt() );
-			updateClasses();
+			QString description = tmp->description();
+			_projectData._tags[id] = TagInfo(id, name, description );
+			updateTags();
 		}
 	}
-*/	
+*/
 }
 
 void GUI::on_actionEditClass_triggered()
@@ -450,12 +462,13 @@ void GUI::updateClasses()
 void GUI::updateTags()
 {
 	_tags.clear();
-	foreach ( QString t, _projectData._tags)
+	foreach ( TagInfo t, _projectData._tags)
 	{
-		QStandardItem *it = new QStandardItem(t);
+		QStandardItem *it = new QStandardItem(t._name);		
+		it->setData( t._tagId, Qt::UserRole+1 );
 		//it->setSelectable(true);
 		it->setCheckable(true);
-		if ( _projectData._imageTags[_currentImageId].contains(t) )
+		if ( _projectData._imageTags[_currentImageId].contains(t._tagId) )
 		{
 			it->setCheckState(Qt::Checked);
 		}
@@ -500,13 +513,11 @@ void GUI::on_actionRemoveClass_triggered()
 
 void GUI::on_actionRemoveTag_triggered()
 {
-	/*QString id = ui->lvClasses->currentIndex().data(Qt::UserRole+1).toString(); //TODO userrol1+1 = clasid
-	int r = ui->lvClasses->currentIndex().row();
-	_classes.removeRow(r);
-	_projectData._classes.remove(id);
+	QString id = ui->lvTags->currentIndex().data(Qt::UserRole+1).toString(); 
+	int r = ui->lvTags->currentIndex().row();
+	_tags.removeRow(r);
+	_projectData._tags.remove(id);
 	_currentClass.clear();
-	*/
-
 }
 
 void GUI::autosave( )

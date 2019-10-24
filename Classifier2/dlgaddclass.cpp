@@ -5,7 +5,6 @@
 
 DlgAddClass::DlgAddClass(QWidget *parent, QString id, QString name, QColor color, int size) :
     QDialog(parent),
-	_editMode(false),
     ui(new Ui::DlgAddClass)
 {
     ui->setupUi(this);
@@ -27,8 +26,7 @@ DlgAddClass::DlgAddClass(QWidget *parent, QString id, QString name, QColor color
 
 	if (!id.isEmpty())
 	{
-		ui->eClass->setText( id );
-		_editMode=true;
+		ui->eClass->setText( id );		
 		ui->bAdd->setText(tr("Save"));
 	}
 	else
